@@ -1,0 +1,63 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName": {
+            "value": "testVm"
+        },
+        "HANAJumpbox": {
+            "value": "yes",
+        },
+        "VMSize": {
+            "value": "Standard_GS5 (448 GB, Certified)"
+        },
+        "NetworkName": {
+            "value": "ra-sap-hana-vnet"
+        },
+        "addressPrefixes": {
+            "value": "10.0.0.0/16"
+        },
+        "HANASubnetName": {
+            "value": "SAPDataSubnet"
+        },
+        "HANASubnetPrefix": {
+            "value": "10.0.5.0/24"
+        },
+        "ManagementSubnetName": {
+            "value": "SAPMgmtSubnet"
+        },
+        "ManagementSubnetPrefix": {
+            "value": "10.0.6.0/24"
+        },
+        "customURI": {
+            "value": "https://yourblobname.blob.core.windows.net/yourContainerName"            
+        },
+        "VMUserName": {
+            "value": "testuser"
+        },
+        "VMPassword": {
+            "value": "YourPassword"
+                        },                    
+        "OperatingSystem": {
+            "value":  "SLES for SAP 12 SP2"
+        },
+        "HANASID": {
+            "value":  "H10"
+        },
+        "HANANumber": {
+            "value": "00"
+        },
+        "ExistingNetworkResourceGroup": {
+            "value": "no"
+        },
+        "IPAllocationMethod": {
+            "value": "Static"
+		},
+		"IPPublic": {
+            "value": "Yes"
+		},
+        "StaticIP": {
+          "value":  "10.0.5.4"
+        }               
+    }
+}
