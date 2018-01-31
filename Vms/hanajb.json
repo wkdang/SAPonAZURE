@@ -38,7 +38,7 @@
         "scriptFolder": ".",
         "scriptFileName": "hanastudio.ps1",
         "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
-        "fileuri":"https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hanastudio.ps1"
+        "fileuri":"https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hanastudio.ps1"
         
     },
     "resources": [
