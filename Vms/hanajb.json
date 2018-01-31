@@ -1,0 +1,165 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine"
+      },
+      "defaultValue": "testuser"
+    },
+    "mgmtSubnetRef": {
+        "type": "string",
+        "metadata": {
+            "description": "The Hana subnet reference ID"
+        }
+    },
+    "vmPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine"
+      },
+      "defaultValue": "Hana07061992!"
+    },
+    "customUri": {
+      "type": "string",
+      "metadata": {
+        "description": "Uri for SAP Bits"
+      }
+    }
+  },
+    "variables": {
+        "subnetRef": "[parameters('mgmtSubnetRef')]",
+        "vmName": "hanajb",
+        "vNicName": "hanajbnic",
+        "PIPName": "hanajbpip",
+        "vhdStorageAccountName": "[uniqueString(resourceGroup().id, 'storage')]",
+        "scriptFolder": ".",
+        "scriptFileName": "hanastudio.ps1",
+        "scriptParameters": "[concat(' -BaseURI ', parameters('customUri'))]",
+        "fileuri":"https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hanastudio.ps1"
+        
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('vhdStorageAccountName')]",
+            "apiVersion": "2016-01-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('PIPName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('vNicName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('PIPName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('PIPName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2016-03-30",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[variables('vmName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('vhdStorageAccountName')]",
+                "[variables('vNICName')]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D1_v2"
+                },
+                "osProfile": {
+                    "computerName": "[variables('vmName')]",
+                    "adminUsername": "[parameters('vmUserName')]",
+                    "adminPassword": "[parameters('vmPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat(reference(variables('vhdStorageAccountName'), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob, 'vhds/osdisk.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('vNicName'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [             
+                                {
+                                    "type": "extensions",
+                                    "name": "CustomScriptExtension",
+                                    "apiVersion": "2015-06-15",
+                                    "location": "[resourceGroup().location]",           
+                                    "dependsOn": [
+                                        "[variables('vmName')]"
+                                    ],
+                                    "tags": {
+                                        "displayName": "hanastudio"
+                                    },
+                                    "properties": {
+                                        "publisher": "Microsoft.Compute",
+                                        "type": "CustomScriptExtension",
+                                        "typeHandlerVersion": "1.9",
+                                        "autoUpgradeMinorVersion": true,
+                                        "settings": {
+                                            "fileUris": [
+                                                "[variables('fileuri')]"
+                                            ],
+                                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File hanastudio.ps1', variables('scriptParameters'))]"
+                                        },
+                                        "protectedSettings": {
+                                           
+                                        }
+                                    }                
+                                }
+                        ]
+        }
+    ],
+    "outputs": { }
+    
+}
