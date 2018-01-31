@@ -30,7 +30,7 @@
             "value": "10.0.6.0/24"
         },
         "customURI": {
-            "value": "https://yourblobname.blob.core.windows.net/yourContainerName"            
+            "value": "https://saphanakit.blob.core.windows.net/installation"            
         },
         "VMUserName": {
             "value": "testuser"
