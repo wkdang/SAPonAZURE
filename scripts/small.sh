@@ -148,8 +148,15 @@ echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
 else
+cd /hana/data/sapbitslocale
+echo "hana download start" >> /tmp/parameter.txt
+/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
+echo "hana download end" >> /tmp/parameter.txt
+
+date >> /tmp/testdate
+cd /hana/data/sapbitslocal
 echo "hana prepare start" >> /tmp/parameter.txt
-cd /hana/data/sapbits
+cd /hana/data/sapbitslocal
 
 #!/bin/bash
 cd /hana/data/sapbitslocal
@@ -166,7 +173,7 @@ echo "hana preapre end" >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+/hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbitslocal/hdbinst-local.cfg
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
