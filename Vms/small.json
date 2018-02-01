@@ -45,6 +45,18 @@
             },
             "defaultValue": "Hana07061992!"
         },
+		"hanaVers": {
+            "type": "string",
+            "defaultValue": "2.0",
+            "allowedValues": [
+                "1.0",
+                "2.0"
+				],
+			"metadata": {
+                "description": "SAP HANA Version 1.0 ou 2.0"
+            }
+            
+        },
         "hanaSid": {
             "type": "string",
             "metadata": {
@@ -390,7 +402,7 @@
                 "fileUris": [
                   "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/scripts/small.sh"
                 ],
-                "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
+                "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVERS'))]"
               }
             }
           }
