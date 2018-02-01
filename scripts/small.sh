@@ -146,7 +146,9 @@ sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-echo "hana preapre end" >> /tmp/parameter.txt
+
+
+
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
@@ -170,14 +172,19 @@ cd /hana/data/sapbits
 cd /hana/data/sapbits
 myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-sedcmd2="s/\/hana\/shared\/sapbitslocal\/\/hana\/data\/sapbitslocal\/g"
+sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbitslocal/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 echo "hana preapre end" >> /tmp/parameter.txt
-
+echo $sedcmd >> /tmp/parameter.txt
+echo $sedcmd2 >> /tmp/parameter.txt
+echo $sedcmd3 >> /tmp/parameter.txt
+echo $sedcmd4 >> /tmp/parameter.txt
+echo $sedcmd5 >> /tmp/parameter.txt
+echo $sedcmd6 >> /tmp/parameter.txt
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
