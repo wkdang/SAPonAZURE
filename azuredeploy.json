@@ -141,13 +141,14 @@
         },
         "IPPublic": {
             "type": "string",
-            "metadata": {
+			"allowedValues": [
+                "Yes",
+                "No"
+            ],           
+			"metadata": {
                 "description": "Choose whether to acquire a public IP"
             },
-            "allowedValues": [
-                "yes",
-                "no"
-            ]
+           
         },
 	
 		"StaticIP": {
