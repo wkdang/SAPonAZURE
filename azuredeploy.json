@@ -151,7 +151,12 @@
           },
           "defaultValue": "yes"
         },
-		
+		"DnSName": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS Name for public IP only"
+            }
+        },
 		"StaticIP": {
           "type": "string",
           "metadata": {
@@ -251,6 +256,9 @@
 					"IPPublic":{
                         "value": "[parameters('IPPublic')]"
                     },
+					"DnSName": {
+						"value": "[parameters('DnSName')]"
+            		},
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
                     }
@@ -304,7 +312,10 @@
 					"IPPublic":{
                         "value": "[parameters('IPPublic')]"
                     },
-                    "StaticIP":{
+					"DnSName": {
+						"value": "[parameters('DnSName')]"
+            		},                    
+					"StaticIP":{
                         "value": "[parameters('StaticIP')]"
                     }
                 }
@@ -357,6 +368,9 @@
 					"IPPublic":{
                         "value": "[parameters('IPPublic')]"
                     },
+					"DnSName": {
+						"value": "[parameters('DnSName')]"
+            		},
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
                     }
@@ -410,6 +424,9 @@
 					"IPPublic":{
                         "value": "[parameters('IPPublic')]"
                     },
+					"DnSName": {
+						"value": "[parameters('DnSName')]"
+            		},
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
                     }
