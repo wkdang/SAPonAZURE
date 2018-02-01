@@ -3,6 +3,7 @@ HANAUSR=$2
 HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
+HANAVERS=$6
 vmSize=$6
 
 
@@ -19,6 +20,7 @@ sudo mkdir /hana/log
 sudo mkdir /hana/shared
 sudo mkdir /hana/backup
 sudo mkdir /usr/sap
+sudo mkdir /hana/data/sapbitslocal
 
 
 # Install .NET Core and AzCopy
@@ -83,6 +85,7 @@ mount -t xfs /dev/backupvg/backuplv /hana/backup
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
 mount -t xfs /dev/hanavg/datalv /hana/data
 mount -t xfs /dev/hanavg/loglv /hana/log 
+mount -t cifs //saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ -o vers=3.0,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==,dir_mode=0777,file_mode=0777,sec=ntlmssp
 mkdir /hana/data/sapbits
 echo "mounthanashared end" >> /tmp/parameter.txt
 
@@ -92,6 +95,7 @@ echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
+echo "//saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ cifs vers=3.0,dir_mode=0777,file_mode=0777,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==">> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
 if [ ! -d "/hana/data/sapbits" ]
@@ -99,7 +103,8 @@ if [ ! -d "/hana/data/sapbits" ]
  mkdir "/hana/data/sapbits"
 fi
 
-
+if $6 = '2.0'
+then
 #!/bin/bash
 cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
@@ -108,7 +113,7 @@ echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
-/usr/bin/wget --quiet "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/hdbinst.cfg"
+/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
 date >> /tmp/testdate
@@ -142,3 +147,27 @@ cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
+else
+echo "hana prepare start" >> /tmp/parameter.txt
+cd /hana/data/sapbits
+
+#!/bin/bash
+cd /hana/data/sapbitslocal
+myhost=`hostname`
+sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+sedcmd2="s/\/hana\/shared\/sapbitslocal\/\/hana\/data\/sapbitslocal\/g"
+sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
+sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
+sedcmd5="s/sid=H10/sid=$HANASID/g"
+sedcmd6="s/number=00/number=$HANANUMBER/g"
+cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+echo "hana preapre end" >> /tmp/parameter.txt
+
+#!/bin/bash
+echo "install hana start" >> /tmp/parameter.txt
+cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+echo "install hana end" >> /tmp/parameter.txt
+
+shutdown -r 1
+fi
