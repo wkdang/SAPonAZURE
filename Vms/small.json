@@ -75,6 +75,17 @@
                 "description": "IP Allocation Method"
           }
         },
+		"IPPublic": {
+            "type": "string",
+            "allowedValues" : [
+              "yes",
+              "no"
+            ],
+            "metadata": {
+                "description": "Choose whether to acquire a public IP"
+          },
+          "defaultValue": "yes"
+        },
         "StaticIP": {
           "type": "string",
           "metadata": {
@@ -166,6 +177,21 @@
         ]
       }
     },
+	{
+	  "condition": "[equals(parameters('IPPublic'), 'Yes')]",
+      "apiVersion": "[variables('api-version')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('vmName'),'-IPPublic')]",
+      "location": "[resourceGroup().location]",
+      "scale": null,
+      "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 30
+            },
+            "dependsOn": []
+	
+	},
     {
       "type": "Microsoft.Compute/disks",
       "name": "[concat(parameters('vmName'),'-shared')]",
@@ -341,7 +367,7 @@
               "autoUpgradeMinorVersion": true,
               "settings": {
                 "fileUris": [
-                  "https://raw.githubusercontent.com/AzureCAT-GSI/SAP-HANA-ARM/master/scripts/small.sh"
+                  "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/scripts/small.sh"
                 ],
                 "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'))]"
               }
