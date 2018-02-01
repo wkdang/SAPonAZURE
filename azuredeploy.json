@@ -351,6 +351,9 @@
               "name": "[parameters('HANASubnetName')]",
               "properties": {
                 "addressPrefix": "[parameters('HANASubnetPrefix')]",
+				  "networkSecurityGroup": { 
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]" 
+               }
 				
 
               }
@@ -358,7 +361,10 @@
             {
                 "name": "[parameters('ManagementSubnetName')]",
                 "properties": {
-                  "addressPrefix": "[parameters('ManagementSubnetPrefix')]"
+                  "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+				  "networkSecurityGroup": { 
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]" 
+               }
 				  
 				  }
               }
