@@ -179,14 +179,14 @@
     "vmSizeArray": "[split(parameters('vmSize'),' ')]",
     "vmSize": "[variables('vmSizeArray')[0]]",
 	"networkSecurityGroupName": "[concat(parameters('vmName'), '_nsg')]",
-	"NSG_SQL_Name": "NSG_SQL_Name",
-	"NSG_XS_Name": "NSG_XS_Name",
-	"NSG_XSA_Name": "NSG_XSA_Name",
-	"NSG_SOAP_Name": "NSG_SOAP_Name",
-	"NSG_SQL2_Name": "NSG_SQL2_Name",
-	"NSG_SQL_SORTANT_Name": "NSG_SQL_SORTANT_Name",
-	"NSG_HTTP_Name": "NSG_HTTP_Name",
-	"NSG_HTTPS_Name": "NSG_HTTPS_Name"
+	"NSG_SQL_Name": "SQL",
+	"NSG_XS_Name": "XS",
+	"NSG_XSA_Name": "XSA",
+	"NSG_SOAP_Name": "SOAP",
+	"NSG_SQL2_Name": "SQL2",
+	"NSG_SQL_SORTANT_Name": "SQL_SORTANT",
+	"NSG_HTTP_Name": "HTTP",
+	"NSG_HTTPS_Name": "HTTPS"
 	
 },
     "resources": [
