@@ -191,142 +191,7 @@
 },
     "resources": [
 
- { 
-       "apiVersion": "2015-06-15", 
-       "type": "Microsoft.Network/networkSecurityGroups", 
-       "name": "[variables('networkSecurityGroupName')]", 
-       "location": "[resourceGroup().location]", 
-       "properties": { 
-         "securityRules": [ 
-			{ 
-             "name": "default-allow-ssh", 
-             "properties": { 
-               "description": "[variables('NSG_SQL_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "22", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1000, 
-               "direction": "Inbound" 
-             } 
-           },
-		 { 
-             "name": "[variables('NSG_SQL_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_SQL_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "30000-39998", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1010, 
-               "direction": "Inbound" 
-             } 
-           },
-		   	{ 
-             "name": "[variables('NSG_XS_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_XS_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "8000-8099", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1020, 
-               "direction": "Inbound" 
-             } 
-           },
-			{ 
-             "name": "[variables('NSG_XSA_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_XSA_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "51000-51500", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1030, 
-               "direction": "Inbound" 
-             } 
-           },
-			{ 
-             "name": "[variables('NSG_SOAP_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_SOAP_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "1128-1129", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1040, 
-               "direction": "Inbound" 
-             } 
-           },
-           { 
-             "name": "[variables('NSG_SQL2_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_SQL2_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "50000-59999", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 1050, 
-               "direction": "Inbound" 
-             } 
-           },
-           { 
-             "name": "[variables('NSG_SQL_SORTANT_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_SQL_SORTANT_Name')]", 
-               "protocol": "Tcp", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "50000-51000", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 100, 
-               "direction": "Outbound" 
-             } 
-           },
-           { 
-             "name": "[variables('NSG_HTTP_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_HTTP_Name')]", 
-               "protocol": "*", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "8000-8099", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 110, 
-               "direction": "Outbound" 
-             } 
-           },
-           { 
-             "name": "[variables('NSG_HTTPS_Name')]", 
-             "properties": { 
-               "description": "[variables('NSG_HTTPS_Name')]", 
-               "protocol": "*", 
-               "sourcePortRange": "*", 
-               "destinationPortRange": "4300-4399", 
-               "sourceAddressPrefix": "*", 
-               "destinationAddressPrefix": "*", 
-               "access": "Allow", 
-               "priority": 120, 
-               "direction": "Outbound" 
-             } 
-           }		   
-         ] 
-       } 
-     }, 
+ 
 
     
     {
@@ -350,9 +215,7 @@
               "name": "[parameters('HANASubnetName')]",
               "properties": {
                 "addressPrefix": "[parameters('HANASubnetPrefix')]",
-				  "networkSecurityGroup": { 
-                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]" 
-               } 
+				
 
               }
             },
@@ -360,9 +223,7 @@
                 "name": "[parameters('ManagementSubnetName')]",
                 "properties": {
                   "addressPrefix": "[parameters('ManagementSubnetPrefix')]"
-				  "networkSecurityGroup": { 
-                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]" 
-               } 
+				  
 				  }
               }
           ]
