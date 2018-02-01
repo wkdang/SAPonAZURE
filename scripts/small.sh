@@ -177,8 +177,9 @@ sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
-cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-echo "hana preapre end" >> /tmp/parameter.txt
+sedcmd7="s/password= /password=$HANAPWD/g"
+cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 | sed $sedcmd7 > hdbinst-local.cfg
+echo "hana prepare end" >> /tmp/parameter.txt
 echo $sedcmd >> /tmp/parameter.txt
 echo $sedcmd2 >> /tmp/parameter.txt
 echo $sedcmd3 >> /tmp/parameter.txt
