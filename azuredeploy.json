@@ -79,6 +79,7 @@
         },
         "customURI": {
             "type": "string",
+            "defaultValue": "https://saphanakit.blob.core.windows.net/installation",
             "metadata": {
                 "description": "URI where SAP bits are uploaded"
             }
@@ -141,16 +142,16 @@
         },
         "IPPublic": {
             "type": "string",
-			"allowedValues": [
-                "Yes",
-                "No"
-            ],           
-			"metadata": {
+            "allowedValues" : [
+              "yes",
+              "no"
+            ],
+            "metadata": {
                 "description": "Choose whether to acquire a public IP"
-            },
-           
+          },
+          "defaultValue": "yes"
         },
-	
+		
 		"StaticIP": {
           "type": "string",
           "metadata": {

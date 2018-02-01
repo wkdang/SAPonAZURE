@@ -54,7 +54,7 @@
             "value": "Static"
 		},
 		"IPPublic": {
-            "value": "Yes"
+            "value": "yes"
 		},
         "StaticIP": {
           "value":  "10.0.5.4"
