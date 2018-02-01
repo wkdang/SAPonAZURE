@@ -143,8 +143,11 @@
       "name": "[concat(parameters('vmName'),'-dynamic')]",
       "location": "[resourceGroup().location]",
 	  "dependsOn": [ 
-           "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'),'-IPPublic')]"], 
+         "[concat('Microsoft.Network/publicIPAddresses/', 'saphanaarm', '-IPPublic')]" 
+		 ], 
 
+	  
+	  
       "properties": {
         "ipConfigurations": [
           {
