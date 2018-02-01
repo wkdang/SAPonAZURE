@@ -186,6 +186,8 @@ echo $sedcmd3 >> /tmp/parameter.txt
 echo $sedcmd4 >> /tmp/parameter.txt
 echo $sedcmd5 >> /tmp/parameter.txt
 echo $sedcmd6 >> /tmp/parameter.txt
+echo $sedcmd7 >> /tmp/parameter.txt
+
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
