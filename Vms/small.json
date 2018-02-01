@@ -142,12 +142,19 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'),'-dynamic')]",
       "location": "[resourceGroup().location]",
+	  "dependsOn": [ 
+           "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'),'-IPPublic')]", 
+
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+			  "publicIPAddress": { 
+			  "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('vmName'),'-IPPublic'))]" 
+                }, 
+
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -178,18 +185,16 @@
       }
     },
 	{
-	  "condition": "[equals(parameters('IPPublic'), 'Yes')]",
+	  "condition": "[equals(parameters('IPPublic'), 'yes')]",
       "apiVersion": "[variables('api-version')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[concat(parameters('vmName'),'-IPPublic')]",
       "location": "[resourceGroup().location]",
-      "scale": null,
       "properties": {
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 30
-            },
-            "dependsOn": []
+            }
 	
 	},
     {
