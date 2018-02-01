@@ -4,7 +4,15 @@ HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
 HANAVERS=$6
-vmSize=$6
+vmSize=$7
+
+echo $1 >> /tmp/parameter.txt
+echo $2 >> /tmp/parameter.txt
+echo $3 >> /tmp/parameter.txt
+echo $4 >> /tmp/parameter.txt
+echo $5 >> /tmp/parameter.txt
+echo $6 >> /tmp/parameter.txt
+
 
 
 #install hana prereqs
@@ -103,7 +111,7 @@ if [ ! -d "/hana/data/sapbits" ]
  mkdir "/hana/data/sapbits"
 fi
 
-if $6 = '2.0'
+if [ $6 -eq "2.0" ]
 then
 #!/bin/bash
 cd /hana/data/sapbits
