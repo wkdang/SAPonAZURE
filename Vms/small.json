@@ -395,7 +395,7 @@
             ],
             "properties": {
               "publisher": "Microsoft.Azure.Extensions",
-              "typx",
+              "type": "CustomScript",
               "typeHandlerVersion": "2.0",
               "autoUpgradeMinorVersion": true,
               "settings": {
