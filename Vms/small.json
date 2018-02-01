@@ -86,6 +86,12 @@
           },
           "defaultValue": "yes"
         },
+		"DnSName": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS Name for public IP only"
+            }
+        },
         "StaticIP": {
           "type": "string",
           "metadata": {
@@ -145,13 +151,10 @@
 	  "dependsOn": [ 
          "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'), '-IPPublic')]" 
 		 ], 
-
-	  
-	  
       "properties": {
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "[concat(parameters('vmName'),'-ipcfg')]",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
 			  "publicIPAddress": { 
@@ -172,13 +175,19 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(parameters('vmName'),'-static')]",
       "location": "[resourceGroup().location]",
+      "dependsOn": [ 
+         "[concat('Microsoft.Network/publicIPAddresses/', parameters('vmName'), '-IPPublic')]" 
+		 ], 
       "properties": {
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "[concat(parameters('vmName'),'-ipcfg')]",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('StaticIP')]",
+			  "privateIPAddress": "[parameters('StaticIP')]",
+			  "publicIPAddress": { 
+			  "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('vmName'),'-IPPublic'))]" 
+                }, 
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -196,8 +205,12 @@
       "properties": {
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Dynamic",
-                "idleTimeoutInMinutes": 30
+                "idleTimeoutInMinutes": 30,
+				"dnsSettings": {
+                    "domainNameLabel": "[parameters('DnSName')]",
+                    "fqdn": "[concat(parameters('DnSName'),'.westeurope.cloudapp.azure.com')]"
             }
+		}	
 	
 	},
     {
