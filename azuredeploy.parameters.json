@@ -41,7 +41,10 @@
         "OperatingSystem": {
             "value":  "SLES for SAP 12 SP2"
         },
-        "HANASID": {
+        "HANAVERS": {
+			"value": "2.0"
+                    },
+		"HANASID": {
             "value":  "H10"
         },
         "HANANumber": {

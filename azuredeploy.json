@@ -108,6 +108,18 @@
                 "RHEL 7.2 for SAP HANA"
             ]
         },
+		"HANAVERS": {
+            "type": "string",
+            "allowedValues": [
+                "1.0",
+                "2.0"
+			],	
+			"metadata": {
+                "description": "SAP HANA Version 1.0 ou 2.0"
+            },
+            "defaultValue": "2.0"
+            
+        },
         "HANASID": {
             "type": "string",
             "metadata": {
@@ -403,7 +415,10 @@
                     "vmPassword": {
                         "value": "[parameters('vmPassword')]"
                     },
-                    "hanaSid": {
+					"hanaVers": {
+						"value": "[parameters('hanaVers')]"
+                    },
+					"hanaSid": {
                         "value": "[parameters('hanaSid')]"
                     },
                     "hanaNumber": {
@@ -459,7 +474,10 @@
                     "vmPassword": {
                         "value": "[parameters('vmPassword')]"
                     },
-                    "hanaSid": {
+                    "hanaVers": {
+						"value": "[parameters('hanaVers')]"
+                    },
+					"hanaSid": {
                         "value": "[parameters('hanaSid')]"
                     },
                     "hanaNumber": {
@@ -515,7 +533,10 @@
                     "vmPassword": {
                         "value": "[parameters('vmPassword')]"
                     },
-                    "hanaSid": {
+                    "hanaVers": {
+						"value": "[parameters('hanaVers')]"
+                    },
+					"hanaSid": {
                         "value": "[parameters('hanaSid')]"
                     },
                     "hanaNumber": {
@@ -571,7 +592,10 @@
                     "vmPassword": {
                         "value": "[parameters('vmPassword')]"
                     },
-                    "hanaSid": {
+                    "hanaVers": {
+						"value": "[parameters('hanaVers')]"
+                    },
+					"hanaSid": {
                         "value": "[parameters('hanaSid')]"
                     },
                     "hanaNumber": {
