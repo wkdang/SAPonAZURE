@@ -111,7 +111,7 @@ if [ ! -d "/hana/data/sapbits" ]
  mkdir "/hana/data/sapbits"
 fi
 
-if [ $6 -eq 2.0 ]
+if [ "$6" == "2.0" ]
 then
 #!/bin/bash
 cd /hana/data/sapbits
