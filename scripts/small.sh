@@ -186,11 +186,12 @@ echo $sedcmd4 >> /tmp/parameter.txt
 echo $sedcmd5 >> /tmp/parameter.txt
 echo $sedcmd6 >> /tmp/parameter.txt
 
+cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+sudo /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/parameter.txt
 
