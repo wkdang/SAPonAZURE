@@ -121,7 +121,7 @@ echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
-/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
+/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
 echo "hana download end" >> /tmp/parameter.txt
 
 date >> /tmp/testdate
@@ -142,18 +142,17 @@ myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
 sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
 sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
-sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
+sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-
-
-
+echo "hana prepare end" >> /tmp/parameter.txt
 
 #!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
@@ -192,6 +191,7 @@ echo $sedcmd6 >> /tmp/parameter.txt
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
