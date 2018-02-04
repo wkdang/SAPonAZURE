@@ -145,8 +145,7 @@
             "type": "object",
             "metadata": {
                 "description": "Scheduled Shutdown"
-            },
-			"defaultValue": "7:00:00 PM"
+            }
         },	
         "IPAllocationMethod": {
             "type": "string",
