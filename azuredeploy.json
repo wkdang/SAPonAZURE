@@ -141,6 +141,13 @@
             },
             "defaultValue": "no"
         },
+		"autoShutdown": {
+            "type": "object",
+            "metadata": {
+                "description": "Scheduled Shutdown"
+            },
+			"defaultValue": "7:00:00 PM"
+        },	
         "IPAllocationMethod": {
             "type": "string",
             "allowedValues" : [
@@ -436,6 +443,9 @@
 					"DnSName": {
 						"value": "[parameters('DnSName')]"
             		},
+					"autoShutdown": {
+						"value": "[parameters('autoShutdown')]"
+            		},
                     "StaticIP":{
                         "value": "[parameters('StaticIP')]"
                     }
@@ -486,6 +496,9 @@
                     "vmSize": {
                         "value": "[variables('vmSize')]"
                     },
+					"autoShutdown": {
+						"value": "[parameters('autoShutdown')]"
+            		},
                     "IPAllocationMethod":{
                         "value": "[parameters('IPAllocationMethod')]"
                     },
@@ -545,6 +558,9 @@
                     "vmSize": {
                         "value": "[variables('vmSize')]"
                     },
+					"autoShutdown": {
+						"value": "[parameters('autoShutdown')]"
+            		},
                     "IPAllocationMethod":{
                         "value": "[parameters('IPAllocationMethod')]"
                     },
@@ -604,6 +620,9 @@
                     "vmSize": {
                         "value": "[variables('vmSize')]"
                     },
+					"autoShutdown": {
+						"value": "[parameters('autoShutdown')]"
+            		},
                     "IPAllocationMethod":{
                         "value": "[parameters('IPAllocationMethod')]"
                     },
