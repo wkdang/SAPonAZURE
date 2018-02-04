@@ -62,9 +62,6 @@
 		"DnSName": {
             "value": "saphana",
         },
-		"autoShutdown": { 
-			"value": "7:00:00 PM" 
-        },
         "StaticIP": {
           "value":  "10.0.5.4"
         }               
