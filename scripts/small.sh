@@ -45,7 +45,7 @@ tar -xf azcopy.tar.gz
 sudo ./install.sh
 
 sudo zypper se -t pattern
-sudo zypper in -t pattern sap-hana
+sudo zypper --non-interactive in -t pattern sap-hana 
 
 # step2
 echo $Uri >> /tmp/url.txt
