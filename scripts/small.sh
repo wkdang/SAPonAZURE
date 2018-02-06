@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 Uri=$1
 HANAUSR=$2
 HANAPWD=$3
@@ -68,7 +70,6 @@ echo "logicalvols start" >> /tmp/parameter.txt
 echo "logicalvols end" >> /tmp/parameter.txt
 
 
-#!/bin/bash
 echo "logicalvols2 start" >> /tmp/parameter.txt
   sharedvglun="$(lsscsi $number 0 0 0 | grep -o '.\{9\}$')"
   usrsapvglun="$(lsscsi $number 0 0 1 | grep -o '.\{9\}$')"
@@ -86,7 +87,6 @@ echo "logicalvols2 start" >> /tmp/parameter.txt
 echo "logicalvols2 end" >> /tmp/parameter.txt
 
 
-#!/bin/bash
 echo "mounthanashared start" >> /tmp/parameter.txt
 mkdir /hana/data/sapbitslocal
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
@@ -114,7 +114,6 @@ fi
 
 if [ "$6" == "2.0" ]
 then
-#!/bin/bash
 cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/md5sums
@@ -129,7 +128,6 @@ date >> /tmp/testdate
 cd /hana/data/sapbits
 
 echo "hana unrar start" >> /tmp/parameter.txt
-#!/bin/bash
 cd /hana/data/sapbits
 unrar x 51052325_part1.exe
 echo "hana unrar end" >> /tmp/parameter.txt
@@ -137,7 +135,6 @@ echo "hana unrar end" >> /tmp/parameter.txt
 echo "hana prepare start" >> /tmp/parameter.txt
 cd /hana/data/sapbits
 
-#!/bin/bash
 cd /hana/data/sapbits
 myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
@@ -149,7 +146,6 @@ sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 echo "hana prepare end" >> /tmp/parameter.txt
 
-#!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
@@ -158,7 +154,6 @@ echo "install hana end" >> /tmp/parameter.txt
 
 shutdown -r 1
 else
-#!/bin/bash
 cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/md5sums
@@ -172,7 +167,6 @@ date >> /tmp/testdate
 cd /hana/data/sapbits
 
 echo "hana unrar start" >> /tmp/parameter.txt
-#!/bin/bash
 cd /hana/data/sapbits
 unrar x 51052383_part1.exe
 echo "hana unrar end" >> /tmp/parameter.txt
@@ -180,7 +174,6 @@ echo "hana unrar end" >> /tmp/parameter.txt
 echo "hana prepare start" >> /tmp/parameter.txt
 cd /hana/data/sapbits
 
-#!/bin/bash
 cd /hana/data/sapbits
 myhost=`hostname`
 sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
@@ -192,10 +185,9 @@ sedcmd6="s/number=00/number=$HANANUMBER/g"
 cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 echo "hana prepare end" >> /tmp/parameter.txt
 
-#!/bin/bash
 echo "install hana start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+cd /hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/sapbitslocal/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/parameter.txt
 
