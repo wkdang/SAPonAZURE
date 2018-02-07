@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -e
+set -e
 
 Uri=$1
 HANAUSR=$2
@@ -7,7 +7,8 @@ HANAPWD=$3
 HANASID=$4
 HANANUMBER=$5
 HANAVERS=$6
-vmSize=$7
+OS=$7
+vmSize=$8
 
 echo $1 >> /tmp/parameter.txt
 echo $2 >> /tmp/parameter.txt
@@ -15,35 +16,69 @@ echo $3 >> /tmp/parameter.txt
 echo $4 >> /tmp/parameter.txt
 echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
+echo $7 >> /tmp/parameter.txt
 
-
-
+if [ "$7" == "RHEL 7.2 for SAP HANA"]; then
+	yum repolist
+	yum -y groupinstall base
+	yum install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
+	sudo mkdir -p /hana/{data,log,shared,backup}
+	sudo mkdir /usr/sap
+	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
+	yum -y install tuned-profiles-sap-hana
+	systemctl start tuned
+	systemctl enable tuned
+	tuned-adm profile sap-hana
+	setenforce 0
+	sed -i 's/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g' \
+	echo "kernel.numa_balancing = 0" > /etc/sysctl.d/sap_hana.conf
+ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
+ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
+ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+echo always > /sys/kernel/mm/transparent_hugepage/enabled
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+grub2-mkconfig -o /boot/grub2/grub.cfg
+systemctl disable abrtd
+systemctl disable abrt-ccpp
+systemctl stop abrtd
+systemctl stop abrt-ccpp
+systemctl stop kdump.service
+systemctl disable kdump.service
+systemctl stop firewalld
+systemctl disable firewalld
+mkdir /sources
+yum install cifs-utils
+	
+	
+else
 #install hana prereqs
-sudo zypper install -y glibc-2.22-51.6
-sudo zypper install -y systemd-228-142.1
-sudo zypper install -y unrar
-sudo zypper install -y sapconf
-sudo zypper install -y saptune
-sudo mkdir /etc/systemd/login.conf.d
-sudo mkdir -p /hana/{data,log,shared,backup}
-sudo mkdir /usr/sap
-sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
+	sudo zypper install -y glibc-2.22-51.6
+	sudo zypper install -y systemd-228-142.1
+	sudo zypper install -y unrar
+	sudo zypper install -y sapconf
+	sudo zypper install -y saptune
+	sudo mkdir /etc/systemd/login.conf.d
+	sudo mkdir -p /hana/{data,log,shared,backup}
+	sudo mkdir /usr/sap
+	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
 
 
 
 # Install .NET Core and AzCopy
-sudo zypper install -y libunwind
-sudo zypper install -y libicu
-curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848824
-sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-sudo ln -s /opt/dotnet/dotnet /usr/bin
+	sudo zypper install -y libunwind
+	sudo zypper install -y libicu
+	curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848824
+	sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
+	sudo ln -s /opt/dotnet/dotnet /usr/bin
 
-wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
-tar -xf azcopy.tar.gz
-sudo ./install.sh
+	wget -O azcopy.tar.gz https://aka.ms/downloadazcopyprlinux
+	tar -xf azcopy.tar.gz
+	sudo ./install.sh
 
-sudo zypper se -t pattern
-sudo zypper --non-interactive in -t pattern sap-hana 
+	sudo zypper se -t pattern
+	sudo zypper --non-interactive in -t pattern sap-hana 
+fi
+
 
 # step2
 echo $Uri >> /tmp/url.txt
@@ -111,24 +146,24 @@ fi
 
 if [ "$6" == "2.0" ]; then
   cd /hana/data/sapbits
-  echo "hana download start" >> /tmp/parameter.txt
+  echo "hana 2.0 download start" >> /tmp/parameter.txt
   /usr/bin/wget --quiet $Uri/SapBits/md5sums
   /usr/bin/wget --quiet $Uri/SapBits/51052325_part1.exe
   /usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
   /usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
   /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
   /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
-  echo "hana download end" >> /tmp/parameter.txt
+  echo "hana 2.0 download end" >> /tmp/parameter.txt
 
   date >> /tmp/testdate
   cd /hana/data/sapbits
 
-  echo "hana unrar start" >> /tmp/parameter.txt
+  echo "hana 2.0 unrar start" >> /tmp/parameter.txt
   cd /hana/data/sapbits
   unrar x 51052325_part1.exe
-  echo "hana unrar end" >> /tmp/parameter.txt
+  echo "hana 2.0 unrar end" >> /tmp/parameter.txt
 
-  echo "hana prepare start" >> /tmp/parameter.txt
+  echo "hana 2.0 prepare start" >> /tmp/parameter.txt
   cd /hana/data/sapbits
 
   cd /hana/data/sapbits
@@ -142,33 +177,33 @@ if [ "$6" == "2.0" ]; then
   #cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
   cp -f /hana/data/sapbits/hdbinst1.cfg /hana/data/sapbits/hdbinst-local.cfg
   sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
-  echo "hana prepare end" >> /tmp/parameter.txt
+  echo "hana 2.0 prepare end" >> /tmp/parameter.txt
 
-  echo "install hana start" >> /tmp/parameter.txt
+  echo "install hana 2.0 start" >> /tmp/parameter.txt
   cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
   /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
   echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
-  echo "install hana end" >> /tmp/parameter.txt
+  echo "install hana 2.0 end" >> /tmp/parameter.txt
 
 else
   cd /hana/data/sapbits
-echo "hana download start" >> /tmp/parameter.txt
+echo "hana 1.0 download start" >> /tmp/parameter.txt
 /usr/bin/wget --quiet $Uri/SapBits/md5sums
 /usr/bin/wget --quiet $Uri/SapBits/51052383_part1.exe
 /usr/bin/wget --quiet $Uri/SapBits/51052383_part2.rar
 /usr/bin/wget --quiet $Uri/SapBits/51052383_part3.rar
 /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
-echo "hana download end" >> /tmp/parameter.txt
+echo "hana 1.0 download end" >> /tmp/parameter.txt
 
 date >> /tmp/testdate
 cd /hana/data/sapbits
 
-echo "hana unrar start" >> /tmp/parameter.txt
+echo "hana 1.0 unrar start" >> /tmp/parameter.txt
 cd /hana/data/sapbits
 unrar x 51052383_part1.exe
-echo "hana unrar end" >> /tmp/parameter.txt
+echo "hana 1.0 unrar end" >> /tmp/parameter.txt
 
-echo "hana prepare start" >> /tmp/parameter.txt
+echo "hana 1.0 prepare start" >> /tmp/parameter.txt
 cd /hana/data/sapbits
 
 cd /hana/data/sapbits
@@ -182,13 +217,13 @@ sedcmd6="s/number=00/number=$HANANUMBER/g"
 #cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
 cp -f /hana/data/sapbits/hdbinst.cfg /hana/data/sapbits/hdbinst-local.cfg
 sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
-echo "hana prepare end" >> /tmp/parameter.txt
+echo "hana 1.0 prepare end" >> /tmp/parameter.txt
 
-echo "install hana start" >> /tmp/parameter.txt
+echo "install hana 1.0 start" >> /tmp/parameter.txt
 cd /hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
 /hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
-echo "install hana end" >> /tmp/parameter.txt
+echo "install hana 1.0 end" >> /tmp/parameter.txt
 
 
 fi
