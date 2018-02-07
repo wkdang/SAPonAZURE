@@ -40,8 +40,8 @@ if [ "$7" == "RHEL" ]; then
 	echo always > /sys/kernel/mm/transparent_hugepage/enabled
 	echo never > /sys/kernel/mm/transparent_hugepage/enabled
 	sedcmd="s/rootdelay=300/rootdelay=300 transparent_hugepage=never intel_idle.max_cstate=1 processor.max_cstate=1/g"
-	sed -i -e $sedcmd /etc/default/grub
-	grub2-mkconfig -o /boot/grub2/grub.cfg
+	sudo sed -i -e $sedcmd /etc/default/grub
+	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
     echo "@sapsys         soft    nproc   unlimited" >> /etc/security/limits.d/99-sapsys.conf
 	systemctl disable abrtd
