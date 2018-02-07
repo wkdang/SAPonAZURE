@@ -18,10 +18,10 @@ echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
 
-if [ "$7" == "RHEL 7.2 for SAP HANA"]; then
+if [ "$7" == "RHEL" ]; then
 	yum repolist
 	yum -y groupinstall base
-	yum install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
+	yum -y install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
 	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
@@ -30,24 +30,35 @@ if [ "$7" == "RHEL 7.2 for SAP HANA"]; then
 	systemctl enable tuned
 	tuned-adm profile sap-hana
 	setenforce 0
-	sed -i 's/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g' \
+	#sed -i 's/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g' \ > /etc/selinux/config
+	sed -i -e "s/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g" /etc/selinux/config
+
 	echo "kernel.numa_balancing = 0" > /etc/sysctl.d/sap_hana.conf
-ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
-ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
-ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
-echo always > /sys/kernel/mm/transparent_hugepage/enabled
-echo never > /sys/kernel/mm/transparent_hugepage/enabled
-grub2-mkconfig -o /boot/grub2/grub.cfg
-systemctl disable abrtd
-systemctl disable abrt-ccpp
-systemctl stop abrtd
-systemctl stop abrt-ccpp
-systemctl stop kdump.service
-systemctl disable kdump.service
-systemctl stop firewalld
-systemctl disable firewalld
-mkdir /sources
-yum install cifs-utils
+	ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
+	ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
+	ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
+	echo always > /sys/kernel/mm/transparent_hugepage/enabled
+	echo never > /sys/kernel/mm/transparent_hugepage/enabled
+	sedcmd="s/rootdelay=300/rootdelay=300 transparent_hugepage=never intel_idle.max_cstate=1 processor.max_cstate=1/g"
+	sed -i -e $sedcmd /etc/default/grub
+	grub2-mkconfig -o /boot/grub2/grub.cfg
+
+    echo "@sapsys         soft    nproc   unlimited" >> /etc/security/limits.d/99-sapsys.conf
+	systemctl disable abrtd
+	systemctl disable abrt-ccpp
+	systemctl stop abrtd
+	systemctl stop abrt-ccpp
+	systemctl stop kdump.service
+	systemctl disable kdump.service
+	systemctl stop firewalld
+	systemctl disable firewalld
+	sudo mkdir -p /sources
+	yum -y install cifs-utils
+	# Install Unrar  
+	wget http://www.rarlab.com/rar/unrar-5.0-RHEL5x64.tar.gz 
+	tar -zxvf unrar-5.0-RHEL5x64.tar.gz 
+	cp unrar /usr/bin/ 
+	chmod 755 /usr/bin/unrar 
 	
 	
 else
@@ -88,6 +99,8 @@ sedcmd="s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g"
 sedcmd2="s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g"
 cat /etc/waagent.conf | sed $sedcmd | sed $sedcmd2 > /etc/waagent.conf.new
 cp -f /etc/waagent.conf.new /etc/waagent.conf
+#sed -i -e "s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g" -e "s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g" /etc/waagent.conf
+
 
 number="$(lsscsi [*] 0 0 4| cut -c2)"
 
