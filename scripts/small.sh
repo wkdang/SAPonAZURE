@@ -139,8 +139,9 @@ if [ "$6" == "2.0" ]; then
   sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
   sedcmd5="s/sid=H10/sid=$HANASID/g"
   sedcmd6="s/number=00/number=$HANANUMBER/g"
-  cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-  #sed -i -e $sedcmd -e $sedcmd2...
+  #cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+  cp -f /hana/data/sapbits/hdbinst1.cfg /hana/data/sapbits/hdbinst-local.cfg
+  sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
   echo "hana prepare end" >> /tmp/parameter.txt
 
   echo "install hana start" >> /tmp/parameter.txt
@@ -149,7 +150,6 @@ if [ "$6" == "2.0" ]; then
   echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
   echo "install hana end" >> /tmp/parameter.txt
 
-  shutdown -r 1
 else
   cd /hana/data/sapbits
 echo "hana download start" >> /tmp/parameter.txt
@@ -179,14 +179,17 @@ sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
 sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
 sedcmd5="s/sid=H10/sid=$HANASID/g"
 sedcmd6="s/number=00/number=$HANANUMBER/g"
-cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+#cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+cp -f /hana/data/sapbits/hdbinst.cfg /hana/data/sapbits/hdbinst-local.cfg
+sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
 echo "hana prepare end" >> /tmp/parameter.txt
 
 echo "install hana start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052325//DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
+cd /hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
+/hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
 echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
 echo "install hana end" >> /tmp/parameter.txt
 
-shutdown -r 1
+
 fi
+shutdown -r 1
