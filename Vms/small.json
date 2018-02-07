@@ -404,7 +404,7 @@
                 "fileUris": [
                   "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/scripts/small.sh"
                 ],
-                "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVERS'))]"
+                "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVERS'), ' ', parameters('OperatingSystem'))]"
               }
             }
           }
