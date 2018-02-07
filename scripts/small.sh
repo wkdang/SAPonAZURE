@@ -27,6 +27,7 @@ sudo zypper install -y saptune
 sudo mkdir /etc/systemd/login.conf.d
 sudo mkdir -p /hana/{data,log,shared,backup}
 sudo mkdir /usr/sap
+sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
 
 
 
@@ -85,7 +86,7 @@ echo "logicalvols2 end" >> /tmp/parameter.txt
 
 
 echo "mounthanashared start" >> /tmp/parameter.txt
-mkdir -p /hana/data/sapbitslocal
+
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
