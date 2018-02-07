@@ -19,6 +19,7 @@ echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
 
 if [ "$7" == "RHEL" ]; then
+	echo "Start REHL prerequisite" >> /tmp/parameter.txt
 	yum repolist
 	yum -y groupinstall base
 	yum -y install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
@@ -31,18 +32,20 @@ if [ "$7" == "RHEL" ]; then
 	tuned-adm profile sap-hana
 	setenforce 0
 	#sed -i 's/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g' \ > /etc/selinux/config
+	echo "start SELINUX" >> /tmp/parameter.txt
 	sed -i -e "s/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g" /etc/selinux/config
-
+echo "end SELINUX" >> /tmp/parameter.txt
 	echo "kernel.numa_balancing = 0" > /etc/sysctl.d/sap_hana.conf
 	ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
 	ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
 	ln -s /usr/lib64/libcrypto.so.1.0.1e /usr/lib64/libcrypto.so.1.0.1
 	echo always > /sys/kernel/mm/transparent_hugepage/enabled
 	echo never > /sys/kernel/mm/transparent_hugepage/enabled
+	echo "start Grub" >> /tmp/parameter.txt
 	sedcmd="s/rootdelay=300/rootdelay=300 transparent_hugepage=never intel_idle.max_cstate=1 processor.max_cstate=1/g"
 	sudo sed -i -e $sedcmd /etc/default/grub
 	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-
+	echo "End Grub" >> /tmp/parameter.txt
     echo "@sapsys         soft    nproc   unlimited" >> /etc/security/limits.d/99-sapsys.conf
 	systemctl disable abrtd
 	systemctl disable abrt-ccpp
@@ -55,11 +58,13 @@ if [ "$7" == "RHEL" ]; then
 	sudo mkdir -p /sources
 	yum -y install cifs-utils
 	# Install Unrar  
+	echo "start RAR" >> /tmp/parameter.txt
 	wget http://www.rarlab.com/rar/unrar-5.0-RHEL5x64.tar.gz 
 	tar -zxvf unrar-5.0-RHEL5x64.tar.gz 
 	cp unrar /usr/bin/ 
 	chmod 755 /usr/bin/unrar 
-	
+	echo "End RAR" >> /tmp/parameter.txt
+	echo "End REHL prerequisite" >> /tmp/parameter.txt
 	
 else
 #install hana prereqs
