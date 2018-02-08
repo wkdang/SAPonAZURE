@@ -22,6 +22,7 @@ if [ "$7" == "RHEL" ]; then
 	echo "Start REHL prerequisite" >> /tmp/parameter.txt
 	yum -y groupinstall base
 	yum -y install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
+	yum -y install compat-sap-c++-6
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
 	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
