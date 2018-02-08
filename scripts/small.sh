@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 Uri=$1
 HANAUSR=$2
@@ -20,7 +20,6 @@ echo $7 >> /tmp/parameter.txt
 
 if [ "$7" == "RHEL" ]; then
 	echo "Start REHL prerequisite" >> /tmp/parameter.txt
-	yum repolist
 	yum -y groupinstall base
 	yum -y install gtk2 libicu xulrunner sudo tcsh libssh2 expect cairo graphviz iptraf-ng 
 	sudo mkdir -p /hana/{data,log,shared,backup}
@@ -44,6 +43,7 @@ echo "end SELINUX" >> /tmp/parameter.txt
 	echo "start Grub" >> /tmp/parameter.txt
 	sedcmd="s/rootdelay=300/rootdelay=300 transparent_hugepage=never intel_idle.max_cstate=1 processor.max_cstate=1/g"
 	sudo sed -i -e $sedcmd /etc/default/grub
+	echo "start Grub2" >> /tmp/parameter.txt
 	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 	echo "End Grub" >> /tmp/parameter.txt
     echo "@sapsys         soft    nproc   unlimited" >> /etc/security/limits.d/99-sapsys.conf
