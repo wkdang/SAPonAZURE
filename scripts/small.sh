@@ -42,7 +42,7 @@ echo "end SELINUX" >> /tmp/parameter.txt
 	echo never > /sys/kernel/mm/transparent_hugepage/enabled
 	echo "start Grub" >> /tmp/parameter.txt
 	sedcmd="s/rootdelay=300/rootdelay=300 transparent_hugepage=never intel_idle.max_cstate=1 processor.max_cstate=1/g"
-	sudo sed -i -e $sedcmd /etc/default/grub
+	sudo sed -i -e "$sedcmd" /etc/default/grub
 	echo "start Grub2" >> /tmp/parameter.txt
 	sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 	echo "End Grub" >> /tmp/parameter.txt
