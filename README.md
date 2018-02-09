@@ -22,14 +22,14 @@ This template allows users to implement SAP HANA 1.0 or SAP HANA 2.0
 
 ![OSChooser Image](https://github.com/wkdang/SAPonAZURE/blob/master/media/OSChooser.png)
 
-SAP HANA 1.0 : Installation media should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052383 for SAP HANA 1.0, which should consist of three files:
+SAP HANA 1.0 : Installation media should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/wkdang/SAPonAZURE/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052383 for SAP HANA 1.0, which should consist of three files:
 ```
 51052383_part1.exe
 51052383_part2.rar
 51052383_part3.rar
 ```
 
-SAP HANA 2.0 : Installation media should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052325 for SAP HANA 2.0, which should consist of four files:
+SAP HANA 2.0 : Installation media should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/wkdang/SAPonAZURE/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052325 for SAP HANA 2.0, which should consist of four files:
 ```
 51052325_part1.exe
 51052325_part2.rar
@@ -50,14 +50,14 @@ The Server Java Runtime Environment bits can be downloaded [here](http://www.ora
 
 There should be a folder inside your storage account container called SapBits:
 
-![SapBits Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure1.png)
+![SapBits Image](https://github.com/wkdang/SAPonAZURE/blob/master/media/Structure1.png)
 
 The following files should be present inside the SapBits folder:
 
-![HANA Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure2.png)
+![HANA Image](https://github.com/wkdang/SAPonAZURE/blob/master/media/Structure2.png)
 
 Additionally if you plan on installing the HANA Jumpbox, you should create a folder under the SapBits folder and add the following files:
-![HANA Studio Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/Structure3.png)
+![HANA Studio Image](https://github.com/wkdang/SAPonAZURE/blob/master/media/Structure3.png)
 
 ## Deploy the Solution
 ### Deploy from the Portal
