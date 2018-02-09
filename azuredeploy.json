@@ -110,7 +110,7 @@
                 "RHEL 7.2 for SAP HANA"
             ]
         },
-		"HANAVersion": {
+		"HANAVers": {
             "type": "string",
             "allowedValues": [
                 "1.0",
