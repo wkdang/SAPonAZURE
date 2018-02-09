@@ -12,6 +12,7 @@
         },
         "HANAJumpbox": {
             "type": "string",
+			"defaultValue": "no",
             "metadata": {
                 "description": "Choose whether to deploy a VM with HANA Studio installed"
             },
@@ -167,7 +168,7 @@
         },
 		"DnSName": {
             "type": "string",
-			"defaultValue": "sapahanaarm",
+			"defaultValue": "saphanaarm",
             "metadata": {
                 "description": "DNS Name for public IP only"
             }
