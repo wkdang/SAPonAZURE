@@ -20,7 +20,7 @@ M128ms | 3.8TB | 5 x P30 | 1 x S30 | 1 x P6 | 1 x S6 | 5 x S30
 ## Installation Media
 This template allows users to implement SAP HANA 1.0 or SAP HANA 2.0
 
-![OSChooser Image](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/media/OSChooser.png)
+![OSChooser Image](https://github.com/wkdang/SAPonAZURE/blob/master/media/OSChooser.png)
 
 SAP HANA 1.0 : Installation media should be downloaded and placed in the SapBits folder. You will need to provide the URI for the container where they are stored, for example https://yourBlobName.blob.core.windows.net/yourContainerName. For more information on how to upload files to Azure please go [here](https://github.com/AzureCAT-GSI/SAP-HANA-ARM/blob/master/UploadToAzure.md)  Specifically you need to download SAP package 51052383 for SAP HANA 1.0, which should consist of three files:
 ```
