@@ -167,6 +167,7 @@
         },
 		"DnSName": {
             "type": "string",
+			"defaultValue": "sapahanaarm",
             "metadata": {
                 "description": "DNS Name for public IP only"
             }
