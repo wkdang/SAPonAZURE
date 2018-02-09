@@ -4,9 +4,11 @@
     "parameters": {
         "VMName": {
             "type": "string",
+			"defaultValue": "sapahanaarm",
             "metadata": {
                 "description": "VM Name"
             }
+			
         },
         "HANAJumpbox": {
             "type": "string",
@@ -108,7 +110,7 @@
                 "RHEL 7.2 for SAP HANA"
             ]
         },
-		"HANAVERS": {
+		"HANAVersion": {
             "type": "string",
             "allowedValues": [
                 "1.0",
