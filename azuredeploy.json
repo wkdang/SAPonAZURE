@@ -182,14 +182,15 @@
         },               
 		"AutoShutdown": {
           "type": "string",
+          "allowedValues": [
+                "yes",
+                "no"
+            ],       
             "metadata": {
                 "description": "Define an autoshutdown for your VM"
             },
-            "defaultValue": "Yes",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ]
+            "defaultValue": "yes",
+
         }
     },
   "variables": {
