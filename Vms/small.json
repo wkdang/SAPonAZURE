@@ -110,6 +110,17 @@
             "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
           },
           "defaultValue": "10.0.5.4"
+        },               
+		"AutoShutdown": {
+          "type": "object",
+            "metadata": {
+                "description": "Define an autoshutdown for your VM"
+            },
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
         }
     },
     "variables": {
@@ -154,6 +165,31 @@
         }
       },
   "resources": [
+    { 
+     "condition": "[equals(parameters('AutoShutdown'), 'Yes')]",
+     "apiVersion": "[providers('Microsoft.DevTestLab','labs').apiVersions[0]]", 
+     "type": "microsoft.devtestlab/schedules", 
+     "name": "[concat('shutdown-computevm-',variables('vmName'))]", 
+     "location": "[resourceGroup().location]", 
+     "dependsOn": [ 
+         "[concat('Microsoft.Compute/virtualMachines/',concat(variables('vmName')))]" 
+     ], 
+     "properties": { 
+         "status": "Enabled", 
+         "taskType": "ComputeVmShutdownTask", 
+         "dailyRecurrence": { 
+             "time": "1900" 
+         }, 
+         "timeZoneId": "Romance Standard Time", 
+         "notificationSettings": { 
+             "status": "Disabled", 
+             "timeInMinutes": 15 
+         }, 
+         "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines',concat(variables('vmName')))]" 
+     } 
+ }, 
+
+    
     {
       "condition": "[equals(parameters('IPAllocationMethod'), 'Dynamic')]",
       "apiVersion": "[variables('api-version')]",
