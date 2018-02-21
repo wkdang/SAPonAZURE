@@ -179,7 +179,21 @@
             "description": "IP Address for the HANA VM when Static IP Allocation Method has been selected"
           },
           "defaultValue": "10.0.5.4"
+        },  
+		
+		"AutoShutdown": {
+          "type": "string",
+          "allowedValues": [
+                "yes",
+                "no"
+            ],       
+            "metadata": {
+                "description": "Define an autoshutdown for your VM"
+            },
+            "defaultValue": "yes"
+
         }
+		
     },
   "variables": {
     "vmName": "[toLower(parameters('vmName'))]",
