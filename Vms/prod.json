@@ -137,13 +137,7 @@
             "sku":"[if (contains(parameters('OperatingSystem'),'12 SP3'),'12-SP3','7.2')]"
         },
         "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
-        "diskConfig_Standard_E16s_v3": {
-            "shared": 255,
-            "sap": 63,
-            "backup": 255,
-            "data1": 511,
-            "data2": 127
-        },
+        
         "diskConfig_Standard_E32s_v3": {
             "shared": 255,
             "sap": 127,
