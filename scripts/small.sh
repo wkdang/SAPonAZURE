@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -e
+set -e
 
 Uri=$1
 HANAUSR=$2
@@ -25,7 +25,7 @@ if [ "$7" == "RHEL" ]; then
 	yum -y install compat-sap-c++-6
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
-	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
+	sudo mkdir -p /hana/data/{SAPCDlocal,SAPCD}
 	yum -y install tuned-profiles-sap-hana
 	systemctl start tuned
 	systemctl enable tuned
@@ -34,7 +34,7 @@ if [ "$7" == "RHEL" ]; then
 	#sed -i 's/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g' \ > /etc/selinux/config
 	echo "start SELINUX" >> /tmp/parameter.txt
 	sed -i -e "s/\(SELINUX=enforcing\|SELINUX=permissive\)/SELINUX=disabled/g" /etc/selinux/config
-echo "end SELINUX" >> /tmp/parameter.txt
+    echo "end SELINUX" >> /tmp/parameter.txt
 	echo "kernel.numa_balancing = 0" > /etc/sysctl.d/sap_hana.conf
 	ln -s /usr/lib64/libssl.so.1.0.1e /usr/lib64/libssl.so.1.0.1
 	ln -s /usr/lib64/libcrypto.so.0.9.8e /usr/lib64/libcrypto.so.0.9.8
@@ -77,7 +77,7 @@ else
 	sudo mkdir /etc/systemd/login.conf.d
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
-	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
+	sudo mkdir -p /hana/data/{SAPCDlocal,SAPCD}
 
 
 
@@ -108,17 +108,33 @@ cp -f /etc/waagent.conf.new /etc/waagent.conf
 #sed -i -e "s/ResourceDisk.EnableSwap=n/ResourceDisk.EnableSwap=y/g" -e "s/ResourceDisk.SwapSizeMB=0/ResourceDisk.SwapSizeMB=163840/g" /etc/waagent.conf
 
 
-number="$(lsscsi [*] 0 0 4| cut -c2)"
+number="$(lsscsi [*] 0 0 9| cut -c2)"
+echo $number >> /tmp/parameter.txt
 
 echo "logicalvols start" >> /tmp/parameter.txt
-  hanavg1lun="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
-  hanavg2lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
-  pvcreate $hanavg1lun $hanavg2lun
-  vgcreate hanavg $hanavg1lun $hanavg2lun
-  lvcreate -l 80%FREE -n datalv hanavg
-  lvcreate -l 20%VG -n loglv hanavg
-  mkfs.xfs /dev/hanavg/datalv
-  mkfs.xfs /dev/hanavg/loglv
+# Stripe data disk
+  hanadatavg1lun="$(lsscsi $number 0 0 3 | grep -o '.\{9\}$')"
+  hanadatavg2lun="$(lsscsi $number 0 0 4 | grep -o '.\{9\}$')"
+  hanadatavg3lun="$(lsscsi $number 0 0 5 | grep -o '.\{9\}$')"
+  hanadatavg4lun="$(lsscsi $number 0 0 6 | grep -o '.\{9\}$')"
+
+  pvcreate $hanadatavg1lun $hanadatavg2lun $hanadatavg3lun $hanadatavg4lun
+  vgcreate hanadatavg $hanadatavg1lun $hanadatavg2lun $hanadatavg3lun $hanadatavg4lun
+  lvcreate -i 4 -l 100%FREE -n datalv hanadatavg
+  mkfs.xfs /dev/hanadatavg/datalv
+  
+
+# Stripe log disk
+  hanalogvg1lun="$(lsscsi $number 0 0 7 | grep -o '.\{9\}$')"
+  hanalogvg2lun="$(lsscsi $number 0 0 8 | grep -o '.\{9\}$')"
+  hanalogvg3lun="$(lsscsi $number 0 0 9 | grep -o '.\{9\}$')"
+  
+  pvcreate $hanalogvg1lun $hanalogvg2lun $hanalogvg3lun 
+  vgcreate hanalogvg $hanalogvg1lun $hanalogvg2lun $hanalogvg3lun
+  lvcreate -i 3 -l 100%FREE -n loglv hanalogvg
+    
+  mkfs.xfs /dev/hanalogvg/loglv
+  
 echo "logicalvols end" >> /tmp/parameter.txt
 
 
@@ -144,106 +160,109 @@ echo "mounthanashared start" >> /tmp/parameter.txt
 mount -t xfs /dev/sharedvg/sharedlv /hana/shared
 mount -t xfs /dev/backupvg/backuplv /hana/backup 
 mount -t xfs /dev/usrsapvg/usrsaplv /usr/sap
-mount -t xfs /dev/hanavg/datalv /hana/data
-mount -t xfs /dev/hanavg/loglv /hana/log 
-mount -t cifs //saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ -o vers=3.0,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==,dir_mode=0777,file_mode=0777,sec=ntlmssp
-mkdir -p /hana/data/sapbits
+mount -t xfs /dev/hanadatavg/datalv /hana/data
+mount -t xfs /dev/hanalogvg/loglv /hana/log 
+#mount -t cifs //saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/SAPCDlocal/ -o vers=3.0,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==,dir_mode=0777,file_mode=0777,sec=ntlmssp
+
+mkdir -p /hana/shared/SAPCD
+ln -s /hana/shared/SAPCD /SAPCD
 echo "mounthanashared end" >> /tmp/parameter.txt
 
 echo "write to fstab start" >> /tmp/parameter.txt
-echo "/dev/mapper/hanavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
-echo "/dev/mapper/hanavg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanadatavg-datalv /hana/data xfs defaults 0 0" >> /etc/fstab
+echo "/dev/mapper/hanalogvg-loglv /hana/log xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/sharedvg-sharedlv /hana/shared xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/backupvg-backuplv /hana/backup xfs defaults 0 0" >> /etc/fstab
 echo "/dev/mapper/usrsapvg-usrsaplv /usr/sap xfs defaults 0 0" >> /etc/fstab
-echo "//saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/sapbitslocal/ cifs vers=3.0,dir_mode=0777,file_mode=0777,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==">> /etc/fstab
+#echo "//saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_122.13 /hana/data/SAPCDlocal/ cifs vers=3.0,dir_mode=0777,file_mode=0777,username=saphanakit,password=UVLxDAZmw937RVDNQBF+OetwlLYwitsbQPHH2tnEiTut/y+hRgx0YkBzUtEGI99mhDsT/KxgSxJ/h6HUu6JHoQ==">> /etc/fstab
 echo "write to fstab end" >> /tmp/parameter.txt
 
-if [ ! -d "/hana/data/sapbits" ]; then
-  mkdir -p "/hana/data/sapbits"
-fi
+#if [ ! -d "/hana/data/SAPCD" ]; then
+#  mkdir -p "/hana/data/SAPCD"
+#fi
 
-if [ "$6" == "2.0" ]; then
-  cd /hana/data/sapbits
-  echo "hana 2.0 download start" >> /tmp/parameter.txt
-  /usr/bin/wget --quiet $Uri/SapBits/md5sums
-  /usr/bin/wget --quiet $Uri/SapBits/51052325_part1.exe
-  /usr/bin/wget --quiet $Uri/SapBits/51052325_part2.rar
-  /usr/bin/wget --quiet $Uri/SapBits/51052325_part3.rar
-  /usr/bin/wget --quiet $Uri/SapBits/51052325_part4.rar
-  /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
-  echo "hana 2.0 download end" >> /tmp/parameter.txt
+#if [ "$6" == "2.0" ]; then
+#  cd /hana/data/SAPCD
+#  echo "hana 2.0 download start" >> /tmp/parameter.txt
+#  /usr/bin/wget --quiet $Uri/SAPCD/md5sums
+#  /usr/bin/wget --quiet $Uri/SAPCD/51052325_part1.exe
+#  /usr/bin/wget --quiet $Uri/SAPCD/51052325_part2.rar
+#  /usr/bin/wget --quiet $Uri/SAPCD/51052325_part3.rar
+#  /usr/bin/wget --quiet $Uri/SAPCD/51052325_part4.rar
+#  /usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst1.cfg"
+#  echo "hana 2.0 download end" >> /tmp/parameter.txt
 
-  date >> /tmp/testdate
-  cd /hana/data/sapbits
+#  date >> /tmp/testdate
+#  cd /hana/data/SAPCD
+#
+#  echo "hana 2.0 unrar start" >> /tmp/parameter.txt
+#  cd /hana/data/SAPCD
+#  unrar x 51052325_part1.exe
+#  echo "hana 2.0 unrar end" >> /tmp/parameter.txt
+#
+#  echo "hana 2.0 prepare start" >> /tmp/parameter.txt
+#  cd /hana/data/SAPCD
+#
+#  cd /hana/data/SAPCD
+#  myhost=`hostname`
+#  sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+#  sedcmd2="s/\/hana\/shared\/SAPCD\/51052325/\/hana\/data\/SAPCD\/51052325/g"
+#  sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
+#  sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
+#  sedcmd5="s/sid=H10/sid=$HANASID/g"
+#  sedcmd6="s/number=00/number=$HANANUMBER/g"
+#  #cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+#  cp -f /hana/data/SAPCD/hdbinst1.cfg /hana/data/SAPCD/hdbinst-local.cfg
+#  sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/SAPCD/hdbinst-local.cfg
+#  echo "hana 2.0 prepare end" >> /tmp/parameter.txt
+#
+#  echo "install hana 2.0 start" >> /tmp/parameter.txt
+#  cd /hana/data/SAPCD/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
+#  /hana/data/SAPCD/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/SAPCD/hdbinst-local.cfg
+#  echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
+#  echo "install hana 2.0 end" >> /tmp/parameter.txt
+#
+#else
+#  cd /hana/data/SAPCD
+#echo "hana 1.0 download start" >> /tmp/parameter.txt
+#/usr/bin/wget --quiet $Uri/SAPCD/md5sums
+#/usr/bin/wget --quiet $Uri/SAPCD/51052383_part1.exe
+#/usr/bin/wget --quiet $Uri/SAPCD/51052383_part2.rar
+#/usr/bin/wget --quiet $Uri/SAPCD/51052383_part3.rar
+#/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
+#echo "hana 1.0 download end" >> /tmp/parameter.txt
+#
+#date >> /tmp/testdate
+#cd /hana/data/SAPCD
+#
+#echo "hana 1.0 unrar start" >> /tmp/parameter.txt
+#cd /hana/data/SAPCD
+#unrar x 51052383_part1.exe
+#echo "hana 1.0 unrar end" >> /tmp/parameter.txt
+#
+#echo "hana 1.0 prepare start" >> /tmp/parameter.txt
+#cd /hana/data/SAPCD
+#
+#cd /hana/data/SAPCD
+#myhost=`hostname`
+#sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
+#sedcmd2="s/\/hana\/shared\/SAPCD\/51052325/\/hana\/data\/SAPCD\/51052383/g"
+#sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
+#sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
+#sedcmd5="s/sid=H10/sid=$HANASID/g"
+#sedcmd6="s/number=00/number=$HANANUMBER/g"
+##cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
+#cp -f /hana/data/SAPCD/hdbinst.cfg /hana/data/SAPCD/hdbinst-local.cfg
+#sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/SAPCD/hdbinst-local.cfg
+#echo "hana 1.0 prepare end" >> /tmp/parameter.txt
+#
+#echo "install hana 1.0 start" >> /tmp/parameter.txt
+#cd /hana/data/SAPCD/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
+#/hana/data/SAPCD/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/SAPCD/hdbinst-local.cfg
+#echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
+#echo "install hana 1.0 end" >> /tmp/parameter.txt
+#
+#
+#fi
 
-  echo "hana 2.0 unrar start" >> /tmp/parameter.txt
-  cd /hana/data/sapbits
-  unrar x 51052325_part1.exe
-  echo "hana 2.0 unrar end" >> /tmp/parameter.txt
-
-  echo "hana 2.0 prepare start" >> /tmp/parameter.txt
-  cd /hana/data/sapbits
-
-  cd /hana/data/sapbits
-  myhost=`hostname`
-  sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-  sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052325/g"
-  sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
-  sedcmd4="s/root_password=AweS0me@PW/root_password=$HANAPWD/g"
-  sedcmd5="s/sid=H10/sid=$HANASID/g"
-  sedcmd6="s/number=00/number=$HANANUMBER/g"
-  #cat hdbinst1.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-  cp -f /hana/data/sapbits/hdbinst1.cfg /hana/data/sapbits/hdbinst-local.cfg
-  sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
-  echo "hana 2.0 prepare end" >> /tmp/parameter.txt
-
-  echo "install hana 2.0 start" >> /tmp/parameter.txt
-  cd /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64
-  /hana/data/sapbits/51052325/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
-  echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
-  echo "install hana 2.0 end" >> /tmp/parameter.txt
-
-else
-  cd /hana/data/sapbits
-echo "hana 1.0 download start" >> /tmp/parameter.txt
-/usr/bin/wget --quiet $Uri/SapBits/md5sums
-/usr/bin/wget --quiet $Uri/SapBits/51052383_part1.exe
-/usr/bin/wget --quiet $Uri/SapBits/51052383_part2.rar
-/usr/bin/wget --quiet $Uri/SapBits/51052383_part3.rar
-/usr/bin/wget --quiet "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/hdbinst.cfg"
-echo "hana 1.0 download end" >> /tmp/parameter.txt
-
-date >> /tmp/testdate
-cd /hana/data/sapbits
-
-echo "hana 1.0 unrar start" >> /tmp/parameter.txt
-cd /hana/data/sapbits
-unrar x 51052383_part1.exe
-echo "hana 1.0 unrar end" >> /tmp/parameter.txt
-
-echo "hana 1.0 prepare start" >> /tmp/parameter.txt
-cd /hana/data/sapbits
-
-cd /hana/data/sapbits
-myhost=`hostname`
-sedcmd="s/REPLACE-WITH-HOSTNAME/$myhost/g"
-sedcmd2="s/\/hana\/shared\/sapbits\/51052325/\/hana\/data\/sapbits\/51052383/g"
-sedcmd3="s/root_user=root/root_user=$HANAUSR/g"
-sedcmd4="s/password=AweS0me@PW/password=$HANAPWD/g"
-sedcmd5="s/sid=H10/sid=$HANASID/g"
-sedcmd6="s/number=00/number=$HANANUMBER/g"
-#cat hdbinst.cfg | sed $sedcmd | sed $sedcmd2 | sed $sedcmd3 | sed $sedcmd4 | sed $sedcmd5 | sed $sedcmd6 > hdbinst-local.cfg
-cp -f /hana/data/sapbits/hdbinst.cfg /hana/data/sapbits/hdbinst-local.cfg
-sed -i -e $sedcmd -e $sedcmd2 -e $sedcmd3 -e $sedcmd4 -e $sedcmd5 -e $sedcmd6 /hana/data/sapbits/hdbinst-local.cfg
-echo "hana 1.0 prepare end" >> /tmp/parameter.txt
-
-echo "install hana 1.0 start" >> /tmp/parameter.txt
-cd /hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64
-/hana/data/sapbits/51052383/DATA_UNITS/HDB_LCM_LINUX_X86_64/hdblcm -b --configfile /hana/data/sapbits/hdbinst-local.cfg
-echo "Log file written to '/var/tmp/hdb_H10_hdblcm_install_xxx/hdblcm.log' on host 'saphanaarm'." >> /tmp/parameter.txt
-echo "install hana 1.0 end" >> /tmp/parameter.txt
-
-
-fi
-shutdown -r 1
+shutdown -r 1 now
