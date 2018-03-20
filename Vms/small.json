@@ -134,22 +134,27 @@
         "OperatingSystemSpec":{
             "imagePublisher":"[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
             "imageOffer":"[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
-            "sku":"[if (contains(parameters('OperatingSystem'),'12 SP2'),'12-SP2','7.2')]"
+            "sku":"[if (contains(parameters('OperatingSystem'),'12 SP3'),'12-SP3','7.2')]"
         },
         "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
         "diskConfig_Standard_E16s_v3": {
-            "shared": 511,
+            "shared": 255,
             "sap": 63,
             "backup": 255,
             "data1": 511,
-            "data2": 511
+            "data2": 127
         },
         "diskConfig_Standard_E32s_v3": {
-            "shared": 511,
-            "sap": 63,
+            "shared": 255,
+            "sap": 127,
             "backup": 511,
-            "data1": 511,
-            "data2": 511
+            "data1": 127,
+            "data2": 127,
+			"data3": 127,
+            "data4": 127,
+			"log1": 127,
+            "log2": 127,
+			"log3": 127	
         },
         "diskConfig_Standard_E64s_v3": {
             "shared": 511,
@@ -269,8 +274,8 @@
       "apiVersion": "[variables('api-version-vm')]",
       "location": "[resourceGroup().location]",
       "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
+        "name": "Premium_LRS",
+        "tier": "Premium"
       },
       "properties": {
         "creationData": {
@@ -285,8 +290,8 @@
       "apiVersion": "[variables('api-version-vm')]",
       "location": "[resourceGroup().location]",
       "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
+        "name": "Premium_LRS",
+        "tier": "Premium"
       },
       "properties": {
         "creationData": {
@@ -343,6 +348,87 @@
         "diskSizeGB": "[variables('diskConfig').data2]"
       }
     },
+	    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('vmName'),'-data3')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[variables('diskConfig').data3]"
+      }
+    },
+	    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('vmName'),'-data4')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[variables('diskConfig').data4]"
+      }
+    },
+	    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('vmName'),'-log1')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[variables('diskConfig').log1]"
+      }
+    },
+		    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('vmName'),'-log2')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[variables('diskConfig').log2]"
+      }
+    },
+		    {
+      "type": "Microsoft.Compute/disks",
+      "name": "[concat(parameters('vmName'),'-log3')]",
+      "apiVersion": "[variables('api-version-vm')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Premium_LRS",
+        "tier": "Premium"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[variables('diskConfig').log3]"
+      }
+    },
+	
     {
       "apiVersion": "[variables('api-version-vm')]",
       "type": "Microsoft.Compute/virtualMachines",
@@ -354,7 +440,12 @@
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-sap'))]",
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-backup1'))]",
         "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data1'))]",
-        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data3'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data4'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]",
+        "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log3'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -410,6 +501,41 @@
               "managedDisk": {
                 "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data2'))]"
               }
+            },
+            {
+              "lun": 5,
+              "createOption": "attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data3'))]"
+              }
+            },
+            {
+              "lun": 6,
+              "createOption": "attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-data4'))]"
+              }
+            },
+            {
+              "lun": 7,
+              "createOption": "attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log1'))]"
+              }
+            },
+            {
+              "lun": 8,
+              "createOption": "attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log2'))]"
+              }
+            },
+			{
+              "lun": 9,
+              "createOption": "attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('vmName'),'-log3'))]"
+              }
             }
           ]
         },
@@ -440,7 +566,7 @@
               "autoUpgradeMinorVersion": true,
               "settings": {
                 "fileUris": [
-                  "https://raw.githubusercontent.com/wkdang/SAPonAzure/master/scripts/small.sh"
+                  "https://raw.githubusercontent.com/wkdang/TRAX-SAPHANA/master/scripts/small.sh"
                 ],
                 "commandToExecute": "[concat('sh small.sh ', parameters('customUri'), ' ' , parameters('vmUserName'), ' ', parameters('vmPassword'),' ', parameters('HANASID'), ' ', parameters('HANANUMBER'), ' ', parameters('HANAVERS'), ' ', parameters('OperatingSystem'))]"
               }
