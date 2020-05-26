@@ -78,7 +78,7 @@ else
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
 	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
-
+	sudo chmod 777 /hana/data/sapbits
 
 
 # Install .NET Core and AzCopy
