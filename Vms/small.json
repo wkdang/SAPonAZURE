@@ -127,7 +127,7 @@
     },
     "variables": {
         "api-version": "2017-06-01",
-        "api-version-vm": "2019-12-01",
+        "api-version-vm": "2019-11-01",
         "mode": "Push",
         "nicName": "[if (equals(parameters('IPAllocationMethod'),'Static'), concat(parameters('vmName'),'-static'), concat(parameters('vmName'),'-dynamic'))]",
         "subnetRef": "[parameters('HANASubnetRef')]",
