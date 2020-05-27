@@ -72,8 +72,9 @@ if [ "$7" == "RHEL" ]; then
 	
 else
 #install hana prereqs
-	sudo zypper install -y glibc
+	
 	sudo zypper install -y systemd
+	sudo zypper install -y glibc
 	sudo zypper install -y unrar
 	sudo zypper install -y sapconf
 	sudo zypper install -y saptune
