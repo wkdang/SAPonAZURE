@@ -144,6 +144,14 @@
             "data1": 511,
             "data2": 511
         },
+	"diskConfig_Standard_E16as_v4": {
+            "shared": 511,
+            "sap": 63,
+            "backup": 255,
+            "data1": 511,
+            "data2": 511
+        },    
+	   
         "diskConfig_Standard_E32s_v3": {
             "shared": 511,
             "sap": 63,
