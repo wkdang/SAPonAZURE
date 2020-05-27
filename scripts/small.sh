@@ -18,6 +18,8 @@ echo $5 >> /tmp/parameter.txt
 echo $6 >> /tmp/parameter.txt
 echo $7 >> /tmp/parameter.txt
 
+sed -i -e "s/Defaults    requiretty/#Defaults    requiretty/g" /etc/sudoers
+
 if [ "$7" == "RHEL" ]; then
 	echo "Start REHL prerequisite" >> /tmp/parameter.txt
 	yum -y groupinstall base
@@ -26,6 +28,7 @@ if [ "$7" == "RHEL" ]; then
 	sudo mkdir -p /hana/{data,log,shared,backup}
 	sudo mkdir /usr/sap
 	sudo mkdir -p /hana/data/{sapbitslocal,sapbits}
+	sudo chmod 777 /hana/data/sapbits
 	yum -y install tuned-profiles-sap-hana
 	systemctl start tuned
 	systemctl enable tuned
