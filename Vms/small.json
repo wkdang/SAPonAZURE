@@ -429,7 +429,7 @@
             "name": "scriptextension",
             "type": "extensions",
             "location": "[resourceGroup().location]",
-            "apiVersion": "[variables('api-version-vm')]",
+            "apiVersion": "2019-12-01",
             "dependsOn": [
               "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
             ],
