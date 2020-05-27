@@ -1,4 +1,4 @@
-sudo	e#!/bin/bash
+!/bin/bash
 set -e
 
 Uri=$1
