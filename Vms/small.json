@@ -25,9 +25,9 @@
             "metadata": {
                 "description": "Operating system for HANA Machine"
             },
-            "defaultValue": "SLES for SAP 12 SP4",
+            "defaultValue": "SLES for SAP 12 SP5",
             "allowedValues": [
-                "SLES for SAP 12 SP4",
+                "SLES for SAP 12 SP5",
                 "RHEL 7.2 for SAP HANA"
             ]
         },
@@ -127,14 +127,14 @@
     },
     "variables": {
         "api-version": "2017-06-01",
-        "api-version-vm": "2017-03-30",
+        "api-version-vm": "2019-12-01",
         "mode": "Push",
         "nicName": "[if (equals(parameters('IPAllocationMethod'),'Static'), concat(parameters('vmName'),'-static'), concat(parameters('vmName'),'-dynamic'))]",
         "subnetRef": "[parameters('HANASubnetRef')]",
         "OperatingSystemSpec":{
             "imagePublisher":"[if (contains(parameters('OperatingSystem'),'SLES'),'SUSE','RedHat')]",
-            "imageOffer":"[if (contains(parameters('OperatingSystem'),'SLES'),'SLES-SAP','RHEL-SAP-HANA')]",
-            "sku":"[if (contains(parameters('OperatingSystem'),'12 SP4'),'12-SP4','7.2')]"
+            "imageOffer":"[if (contains(parameters('OperatingSystem'),'12 SP5'),'sles-sap-12-sp5','RHEL-SAP-HANA')]",
+            "sku":"[if (contains(parameters('OperatingSystem'),'SLES'),'gen1','7.2')]"
         },
         "diskConfig": "[variables(concat('diskConfig_', parameters('vmSize')))]",
         "diskConfig_Standard_E16s_v3": {
