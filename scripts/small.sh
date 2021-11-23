@@ -164,7 +164,8 @@ echo "//saphanakit.file.core.windows.net/sapinstall/HANA1SP12/SAP_HANA_1.0_DSP_1
 echo "write to fstab end" >> /tmp/parameter.txt
 
 if [ ! -d "/hana/data/sapbits" ]; then
-  mkdir -p "/hana/data/sapbits"
+  sudo mkdir -p "/hana/data/sapbits"
+  sudo chmod 777 /hana/data/sapbits
 fi
 
 if [ "$6" == "2.0" ]; then
